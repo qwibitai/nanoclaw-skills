@@ -1,0 +1,14 @@
+{
+  "name": "nanoclaw-skills",
+  "owner": {
+    "name": "qwibitai"
+  },
+  "plugins": [
+    {
+      "name": "add-discord",
+      "source": "./plugins/add-discord",
+      "description": "Add Discord bot channel integration to NanoClaw",
+      "version": "1.0.0"
+    }
+  ]
+}
