@@ -23,23 +23,23 @@ If they have one, collect it now. If not, we'll create one in Phase 3.
 
 ## Phase 2: Apply Code Changes
 
-### Ensure upstream remote
+### Ensure channel remote
 
 ```bash
 git remote -v
 ```
 
-If `upstream` is missing, add it:
+If `discord` is missing, add it:
 
 ```bash
-git remote add upstream https://github.com/qwibitai/nanoclaw.git
+git remote add discord https://github.com/qwibitai/nanoclaw-discord.git
 ```
 
 ### Merge the skill branch
 
 ```bash
-git fetch upstream skill/discord
-git merge upstream/skill/discord
+git fetch discord main
+git merge discord/main
 ```
 
 This merges in:

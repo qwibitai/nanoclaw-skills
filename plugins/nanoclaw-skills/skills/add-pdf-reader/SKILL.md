@@ -14,23 +14,23 @@ Adds PDF reading capability to all container agents using poppler-utils (pdftote
 
 ## Phase 2: Apply Code Changes
 
-### Ensure upstream remote
+### Ensure WhatsApp fork remote
 
 ```bash
 git remote -v
 ```
 
-If `upstream` is missing, add it:
+If `whatsapp` is missing, add it:
 
 ```bash
-git remote add upstream https://github.com/qwibitai/nanoclaw.git
+git remote add whatsapp https://github.com/qwibitai/nanoclaw-whatsapp.git
 ```
 
 ### Merge the skill branch
 
 ```bash
-git fetch upstream skill/pdf-reader
-git merge upstream/skill/pdf-reader
+git fetch whatsapp skill/pdf-reader
+git merge whatsapp/skill/pdf-reader
 ```
 
 This merges in:

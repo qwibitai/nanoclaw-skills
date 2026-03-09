@@ -59,14 +59,24 @@ For better accuracy at the cost of speed, use `ggml-small.bin` (466MB) or `ggml-
 
 ## Phase 2: Apply Code Changes
 
-Merge the skill branch:
+### Ensure WhatsApp fork remote
 
 ```bash
-git fetch upstream skill/local-whisper
-git merge upstream/skill/local-whisper
+git remote -v
 ```
 
-> **Note:** `upstream` is the remote pointing to `qwibitai/nanoclaw`. If using a different remote name, substitute accordingly.
+If `whatsapp` is missing, add it:
+
+```bash
+git remote add whatsapp https://github.com/qwibitai/nanoclaw-whatsapp.git
+```
+
+### Merge the skill branch
+
+```bash
+git fetch whatsapp skill/local-whisper
+git merge whatsapp/skill/local-whisper
+```
 
 This modifies `src/transcription.ts` to use the `whisper-cli` binary instead of the OpenAI API.
 

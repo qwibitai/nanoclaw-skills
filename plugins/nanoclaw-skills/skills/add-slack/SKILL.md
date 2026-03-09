@@ -19,23 +19,23 @@ Check if `src/channels/slack.ts` exists. If it does, skip to Phase 3 (Setup). Th
 
 ## Phase 2: Apply Code Changes
 
-### Ensure upstream remote
+### Ensure channel remote
 
 ```bash
 git remote -v
 ```
 
-If `upstream` is missing, add it:
+If `slack` is missing, add it:
 
 ```bash
-git remote add upstream https://github.com/qwibitai/nanoclaw.git
+git remote add slack https://github.com/qwibitai/nanoclaw-slack.git
 ```
 
 ### Merge the skill branch
 
 ```bash
-git fetch upstream skill/slack
-git merge upstream/skill/slack
+git fetch slack main
+git merge slack/main
 ```
 
 This merges in:

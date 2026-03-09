@@ -21,14 +21,24 @@ If already applied, skip to Phase 3 (Verify).
 
 ## Phase 2: Apply Code Changes
 
-Merge the skill branch:
+### Ensure WhatsApp fork remote
 
 ```bash
-git fetch upstream skill/reactions
-git merge upstream/skill/reactions
+git remote -v
 ```
 
-> **Note:** `upstream` is the remote pointing to `qwibitai/nanoclaw`. If using a different remote name, substitute accordingly.
+If `whatsapp` is missing, add it:
+
+```bash
+git remote add whatsapp https://github.com/qwibitai/nanoclaw-whatsapp.git
+```
+
+### Merge the skill branch
+
+```bash
+git fetch whatsapp skill/reactions
+git merge whatsapp/skill/reactions
+```
 
 This adds:
 - `scripts/migrate-reactions.ts` (database migration for `reactions` table with composite PK and indexes)

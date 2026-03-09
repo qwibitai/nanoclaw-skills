@@ -46,23 +46,23 @@ AskUserQuestion: What is your phone number? (Include country code without +, e.g
 
 Check if `src/channels/whatsapp.ts` already exists. If it does, skip to Phase 3 (Authentication).
 
-### Ensure upstream remote
+### Ensure channel remote
 
 ```bash
 git remote -v
 ```
 
-If `upstream` is missing, add it:
+If `whatsapp` is missing, add it:
 
 ```bash
-git remote add upstream https://github.com/qwibitai/nanoclaw.git
+git remote add whatsapp https://github.com/qwibitai/nanoclaw-whatsapp.git
 ```
 
 ### Merge the skill branch
 
 ```bash
-git fetch upstream skill/whatsapp
-git merge upstream/skill/whatsapp
+git fetch whatsapp main
+git merge whatsapp/main
 ```
 
 This merges in:

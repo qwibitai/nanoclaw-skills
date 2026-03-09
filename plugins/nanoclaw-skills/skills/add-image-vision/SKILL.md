@@ -16,23 +16,23 @@ Adds the ability for NanoClaw agents to see and understand images sent via Whats
 
 ## Phase 2: Apply Code Changes
 
-### Ensure upstream remote
+### Ensure WhatsApp fork remote
 
 ```bash
 git remote -v
 ```
 
-If `upstream` is missing, add it:
+If `whatsapp` is missing, add it:
 
 ```bash
-git remote add upstream https://github.com/qwibitai/nanoclaw.git
+git remote add whatsapp https://github.com/qwibitai/nanoclaw-whatsapp.git
 ```
 
 ### Merge the skill branch
 
 ```bash
-git fetch upstream skill/image-vision
-git merge upstream/skill/image-vision
+git fetch whatsapp skill/image-vision
+git merge whatsapp/skill/image-vision
 ```
 
 This merges in:

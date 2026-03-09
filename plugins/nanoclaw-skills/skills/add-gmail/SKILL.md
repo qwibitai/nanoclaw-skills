@@ -24,23 +24,23 @@ AskUserQuestion: Should incoming emails be able to trigger the agent?
 
 ## Phase 2: Apply Code Changes
 
-### Ensure upstream remote
+### Ensure channel remote
 
 ```bash
 git remote -v
 ```
 
-If `upstream` is missing, add it:
+If `gmail` is missing, add it:
 
 ```bash
-git remote add upstream https://github.com/qwibitai/nanoclaw.git
+git remote add gmail https://github.com/qwibitai/nanoclaw-gmail.git
 ```
 
 ### Merge the skill branch
 
 ```bash
-git fetch upstream skill/gmail
-git merge upstream/skill/gmail
+git fetch gmail main
+git merge gmail/main
 ```
 
 This merges in:
