@@ -5,120 +5,24 @@
   },
   "plugins": [
     {
-      "name": "add-compact",
-      "source": "./plugins/add-compact",
-      "description": "Add /compact command for manual context compaction. Solves context rot in long sessions by forwarding the SDK's built-in /compact slash command. Main-group or trusted sender only.",
+      "name": "nanoclaw-skills",
+      "source": "./plugins/nanoclaw-skills",
+      "description": "Official NanoClaw feature skills — channel integrations, add-ons, and tools",
       "version": "1.0.0",
       "skills": [
-        "."
-      ]
-    },
-    {
-      "name": "add-discord",
-      "source": "./plugins/add-discord",
-      "description": "Add Discord bot channel integration to NanoClaw.",
-      "version": "1.0.0",
-      "skills": [
-        "."
-      ]
-    },
-    {
-      "name": "add-gmail",
-      "source": "./plugins/add-gmail",
-      "description": "Add Gmail integration to NanoClaw. Can be configured as a tool (agent reads/sends emails when triggered from WhatsApp) or as a full channel (emails can trigger the agent, schedule tasks, and receive replies). Guides through GCP OAuth setup and implements the integration.",
-      "version": "1.0.0",
-      "skills": [
-        "."
-      ]
-    },
-    {
-      "name": "add-image-vision",
-      "source": "./plugins/add-image-vision",
-      "description": "Add image vision to NanoClaw agents. Resizes and processes WhatsApp image attachments, then sends them to Claude as multimodal content blocks.",
-      "version": "1.0.0",
-      "skills": [
-        "."
-      ]
-    },
-    {
-      "name": "add-ollama-tool",
-      "source": "./plugins/add-ollama-tool",
-      "description": "Add Ollama MCP server so the container agent can call local models for cheaper/faster tasks like summarization, translation, or general queries.",
-      "version": "1.0.0",
-      "skills": [
-        "."
-      ]
-    },
-    {
-      "name": "add-pdf-reader",
-      "source": "./plugins/add-pdf-reader",
-      "description": "Add PDF reading to NanoClaw agents. Extracts text from PDFs via pdftotext CLI. Handles WhatsApp attachments, URLs, and local files.",
-      "version": "1.0.0",
-      "skills": [
-        "."
-      ]
-    },
-    {
-      "name": "add-reactions",
-      "source": "./plugins/add-reactions",
-      "description": "Add WhatsApp emoji reaction support \u2014 receive, send, store, and search reactions.",
-      "version": "1.0.0",
-      "skills": [
-        "."
-      ]
-    },
-    {
-      "name": "add-slack",
-      "source": "./plugins/add-slack",
-      "description": "Add Slack as a channel. Can replace WhatsApp entirely or run alongside it. Uses Socket Mode (no public URL needed).",
-      "version": "1.0.0",
-      "skills": [
-        "."
-      ]
-    },
-    {
-      "name": "add-telegram",
-      "source": "./plugins/add-telegram",
-      "description": "Add Telegram as a channel. Can replace WhatsApp entirely or run alongside it. Also configurable as a control-only channel (triggers actions) or passive channel (receives notifications only).",
-      "version": "1.0.0",
-      "skills": [
-        "."
-      ]
-    },
-    {
-      "name": "add-voice-transcription",
-      "source": "./plugins/add-voice-transcription",
-      "description": "Add voice message transcription to NanoClaw using OpenAI's Whisper API. Automatically transcribes WhatsApp voice notes so the agent can read and respond to them.",
-      "version": "1.0.0",
-      "skills": [
-        "."
-      ]
-    },
-    {
-      "name": "add-whatsapp",
-      "source": "./plugins/add-whatsapp",
-      "description": "Add WhatsApp as a channel. Can replace other channels entirely or run alongside them. Uses QR code or pairing code for authentication.",
-      "version": "1.0.0",
-      "skills": [
-        "."
-      ]
-    },
-    {
-      "name": "convert-to-apple-container",
-      "source": "./plugins/convert-to-apple-container",
-      "description": "Switch from Docker to Apple Container for macOS-native container isolation. Use when the user wants Apple Container instead of Docker, or is setting up on macOS and prefers the native runtime. Triggers on \"apple container\", \"convert to apple container\", \"switch to apple container\", or \"use apple container\".",
-      "version": "1.0.0",
-      "skills": [
-        "."
-      ]
-    },
-    {
-      "name": "use-local-whisper",
-      "source": "./plugins/use-local-whisper",
-      "description": "Use when the user wants local voice transcription instead of OpenAI Whisper API. Switches to whisper.cpp running on Apple Silicon. WhatsApp only for now. Requires voice-transcription skill to be applied first.",
-      "version": "1.0.0",
-      "skills": [
-        "."
+        "./skills/add-compact",
+        "./skills/add-discord",
+        "./skills/add-gmail",
+        "./skills/add-image-vision",
+        "./skills/add-ollama-tool",
+        "./skills/add-pdf-reader",
+        "./skills/add-reactions",
+        "./skills/add-slack",
+        "./skills/add-telegram",
+        "./skills/add-voice-transcription",
+        "./skills/add-whatsapp",
+        "./skills/convert-to-apple-container",
+        "./skills/use-local-whisper"
       ]
     }
   ]

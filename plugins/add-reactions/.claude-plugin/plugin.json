@@ -1,8 +1,0 @@
-{
-  "name": "add-reactions",
-  "description": "Add WhatsApp emoji reaction support \u2014 receive, send, store, and search reactions.",
-  "version": "1.0.0",
-  "skills": [
-    "."
-  ]
-}

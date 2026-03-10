@@ -1,8 +1,0 @@
-{
-  "name": "add-whatsapp",
-  "description": "Add WhatsApp as a channel. Can replace other channels entirely or run alongside them. Uses QR code or pairing code for authentication.",
-  "version": "1.0.0",
-  "skills": [
-    "."
-  ]
-}
