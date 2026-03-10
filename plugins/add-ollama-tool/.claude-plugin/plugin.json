@@ -1,0 +1,8 @@
+{
+  "name": "add-ollama-tool",
+  "description": "Add Ollama MCP server so the container agent can call local models for cheaper/faster tasks like summarization, translation, or general queries.",
+  "version": "1.0.0",
+  "skills": [
+    "."
+  ]
+}
