@@ -1,8 +1,5 @@
 {
   "name": "add-image-vision",
   "description": "Add image vision to NanoClaw agents. Resizes and processes WhatsApp image attachments, then sends them to Claude as multimodal content blocks.",
-  "version": "1.0.0",
-  "skills": [
-    "."
-  ]
+  "version": "1.0.0"
 }

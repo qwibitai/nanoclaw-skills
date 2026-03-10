@@ -1,8 +1,5 @@
 {
   "name": "add-discord",
   "description": "Add Discord bot channel integration to NanoClaw.",
-  "version": "1.0.0",
-  "skills": [
-    "."
-  ]
+  "version": "1.0.0"
 }
