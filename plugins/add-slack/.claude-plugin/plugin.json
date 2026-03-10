@@ -1,5 +1,8 @@
 {
   "name": "add-slack",
   "description": "Add Slack as a channel. Can replace WhatsApp entirely or run alongside it. Uses Socket Mode (no public URL needed).",
-  "version": "1.0.0"
+  "version": "1.0.0",
+  "skills": [
+    "."
+  ]
 }
