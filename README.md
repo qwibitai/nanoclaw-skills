@@ -15,6 +15,7 @@ This marketplace is auto-registered in NanoClaw's `.claude/settings.json` and lo
 - `/add-slack` — Slack via Socket Mode
 - `/add-discord` — Discord bot channel
 - `/add-gmail` — Gmail integration (tool or full channel)
+- `/add-emacs` — Emacs chat buffer and org-mode integration via local HTTP bridge
 
 ### Integrations
 - `/add-voice-transcription` — OpenAI Whisper voice transcription (requires WhatsApp)
@@ -26,10 +27,14 @@ This marketplace is auto-registered in NanoClaw's `.claude/settings.json` and lo
 - `/x-integration` — X (Twitter) posting and interaction
 - `/add-reactions` — WhatsApp emoji reactions
 - `/add-compact` — Manual context compaction command
+- `/channel-formatting` — Convert Markdown to native channel syntax (WhatsApp, Telegram, Slack)
 
 ### Tools
 - `/claw` — CLI tool to run NanoClaw agents from the terminal
 - `/convert-to-apple-container` — Switch from Docker to Apple Container
+- `/add-macos-statusbar` — macOS menu bar status indicator with start/stop controls
+- `/init-onecli` — Install OneCLI Agent Vault and migrate .env credentials
+- `/use-native-credential-proxy` — Use built-in .env credential proxy instead of OneCLI
 - `/qodo-pr-resolver` — Review and resolve Qodo PR issues
 - `/get-qodo-rules` — Load Qodo coding rules before code tasks
 
