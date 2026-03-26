@@ -1,20 +1,6 @@
 {
   "name": "nanoclaw-skills",
-  "description": "Official NanoClaw feature skills — channel integrations, add-ons, and tools",
+  "description": "Official NanoClaw feature skills — channels, integrations, and tools",
   "version": "1.0.0",
-  "skills": [
-    "./skills/add-compact",
-    "./skills/add-discord",
-    "./skills/add-gmail",
-    "./skills/add-image-vision",
-    "./skills/add-ollama-tool",
-    "./skills/add-pdf-reader",
-    "./skills/add-reactions",
-    "./skills/add-slack",
-    "./skills/add-telegram",
-    "./skills/add-voice-transcription",
-    "./skills/add-whatsapp",
-    "./skills/convert-to-apple-container",
-    "./skills/use-local-whisper"
-  ]
+  "author": "NanoCo"
 }
