@@ -2,5 +2,7 @@
   "name": "nanoclaw-skills",
   "description": "Official NanoClaw feature skills — channels, integrations, and tools",
   "version": "1.0.0",
-  "author": "NanoCo"
+  "author": {
+    "name": "NanoCo"
+  }
 }
