@@ -31,6 +31,7 @@ This marketplace is auto-registered in NanoClaw's `.claude/settings.json` and lo
 
 ### Tools
 - `/claw` — CLI tool to run NanoClaw agents from the terminal
+- `/imans` — Imans CLI workflows for workspace, catalog, and sales order data
 - `/convert-to-apple-container` — Switch from Docker to Apple Container
 - `/add-macos-statusbar` — macOS menu bar status indicator with start/stop controls
 - `/init-onecli` — Install OneCLI Agent Vault and migrate .env credentials
