@@ -212,10 +212,17 @@ grep "Nimble web search MCP configured" logs/nanoclaw.log | tail -1
 
 ## Security Notes
 
-- The API key lives in `.env` (gitignored) and is forwarded only into the agent
-  container's environment at spawn. It is never committed, logged, or echoed.
-- The hosted endpoint is authenticated with `Authorization: Bearer` over HTTPS; no key
-  material is embedded in any tracked file.
+- The API key lives in `.env` (gitignored) and is forwarded into the agent container's
+  environment at spawn — the same model `/add-parallel` uses. Be aware this differs from
+  NanoClaw's OneCLI vault model (`docs/SECURITY.md`: credentials injected at the gateway,
+  never present in the container): with this skill the agent process **can** read
+  `NIMBLE_API_KEY`, and agents ingest untrusted web content by design. Use a dedicated
+  key for this integration and rotate it from the Nimble dashboard if in doubt. If
+  OneCLI's generic secret injection gains support for third-party MCP hosts, this skill
+  can switch to a placeholder header rewritten at the proxy — the registration shape
+  would not change.
+- No step commits, logs, or echoes the key; the hosted endpoint is authenticated with
+  `Authorization: Bearer` over HTTPS, and no key material lands in any tracked file.
 
 ## Troubleshooting
 
@@ -251,8 +258,10 @@ grep "Nimble web search MCP configured" logs/nanoclaw.log | tail -1
 
   A healthy key returns a `serverInfo` block naming the `Nimble` server.
 
-**Egress-locked installs:** if the fork runs with egress lockdown enabled, allow
-`mcp.nimbleway.com` in the egress allowlist or the container cannot reach the endpoint.
+**Egress-locked installs:** the opt-in lockdown (`NANOCLAW_EGRESS_LOCKDOWN=true`) places
+containers on an internal network whose only route out is the OneCLI gateway. This
+skill's hosted-MCP calls have not been verified under lockdown and may be blocked —
+re-run the step 7 test after enabling it before relying on the integration.
 
 ## Uninstalling
 
