@@ -201,7 +201,10 @@ Tell the user to test:
 >
 > The assistant should call `mcp__nimble__nimble_search` and answer with source URLs.
 
-Check the logs to verify the server loaded:
+The reply with cited sources is the verification. If you also want to see the
+registration line, note that container stderr reaches `logs/nanoclaw.log` at **debug
+level only** — restart the service with `LOG_LEVEL=debug` (the repo's `/debug` skill
+shows how), then:
 
 ```bash
 grep "Nimble web search MCP configured" logs/nanoclaw.log | tail -1
@@ -229,8 +232,10 @@ grep "Nimble web search MCP configured" logs/nanoclaw.log | tail -1
 - Verify registration: `grep -n "Nimble web search MCP configured" container/agent-runner/src/index.ts`
 - Run `pnpm run build` and restart, then send a new message — the agent runner is mounted
   read-only at `/app/src`, so a running container keeps the old source until it respawns
-- Look for `Nimble web search MCP configured` vs its absence in the container logs
-  (`groups/main/logs/container-*.log`)
+- To watch the registration line at runtime: container stderr is logged at **debug level
+  only**, so restart with `LOG_LEVEL=debug` (see the repo's `/debug` skill) and grep
+  `logs/nanoclaw.log` for `Nimble web search MCP configured` — if it's absent under debug
+  logging, the key never reached the container
 
 **Auth errors (401/403) from Nimble:**
 

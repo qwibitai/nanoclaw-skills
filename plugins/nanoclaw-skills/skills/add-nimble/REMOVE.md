@@ -51,9 +51,11 @@ source setup/lib/install-slug.sh 2>/dev/null && \
 ## Verification
 
 After removal, asking the agent to "search the web with nimble" should report no such
-tool, and no `Nimble web search MCP configured` line appears in the logs after the last
-restart:
+tool, and the registration block is gone from the source:
 
 ```bash
-grep "Nimble web search MCP configured" logs/nanoclaw.log | tail -1
+grep -c "Nimble web search MCP configured" container/agent-runner/src/index.ts   # expect 0
 ```
+
+(Don't verify via `logs/nanoclaw.log` — container stderr only reaches it at
+`LOG_LEVEL=debug`, so an absent line proves nothing on a default install.)
