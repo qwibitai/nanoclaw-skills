@@ -1,0 +1,58 @@
+# Remove Nimble Web Search
+
+Idempotent — safe to run even if some steps were never applied.
+
+## 1. Unregister the MCP server
+
+In `container/agent-runner/src/index.ts`, remove the `if (process.env.NIMBLE_API_KEY) { … }`
+block (including its comment) that registers `mcpServers['nimble']` after the
+`config.mcpServers` merge loop.
+
+**Older forks** (applied via the fallbacks): remove `'mcp__nimble__*'` from the
+`allowedTools` array instead.
+
+## 2. Revert the host-side edit in `src/container-runner.ts`
+
+- Remove the `const nimbleApiKey = readEnvFile(['NIMBLE_API_KEY']).NIMBLE_API_KEY;` block
+  (and its comment) that follows the `TZ` env line.
+- Remove `import { readEnvFile } from './env.js';` **only if** nothing else in the file
+  uses `readEnvFile` (grep first).
+
+**Older forks:** remove `'NIMBLE_API_KEY'` from the `allowedVars` array instead.
+
+## 3. Remove the agent guidance
+
+Delete the `## Web search (Nimble)` section from `container/CLAUDE.md` (or from
+`groups/main/CLAUDE.md` on older forks, if it was added there).
+
+## 4. Remove the env var
+
+```bash
+sed -i.bak '/^NIMBLE_API_KEY=/d' .env && rm -f .env.bak
+```
+
+## 5. Build and restart
+
+Only the host code needs compiling — the agent runner and `container/CLAUDE.md` are mounted
+at spawn, so no image rebuild is needed.
+
+```bash
+pnpm run build
+
+# macOS
+source setup/lib/install-slug.sh 2>/dev/null && \
+  launchctl kickstart -k "gui/$(id -u)/$(launchd_label)" || \
+  launchctl kickstart -k "gui/$(id -u)/com.nanoclaw"
+
+# Linux: systemctl --user restart nanoclaw
+```
+
+## Verification
+
+After removal, asking the agent to "search the web with nimble" should report no such
+tool, and no `Nimble web search MCP configured` line appears in the logs after the last
+restart:
+
+```bash
+grep "Nimble web search MCP configured" logs/nanoclaw.log | tail -1
+```
