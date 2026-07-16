@@ -8,8 +8,9 @@ In `container/agent-runner/src/index.ts`, remove the `if (process.env.NIMBLE_API
 block (including its comment) that registers `mcpServers['nimble']` after the
 `config.mcpServers` merge loop.
 
-**Older forks** (applied via the fallbacks): remove `'mcp__nimble__*'` from the
-`allowedTools` array instead.
+**Older forks** (applied via the fallbacks): remove the same registration block, and
+additionally remove `'mcp__nimble__*'` from the `allowedTools` array — on older forks
+apply added both.
 
 ## 2. Revert the host-side edit in `src/container-runner.ts`
 
