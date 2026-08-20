@@ -2,60 +2,79 @@
 
 Idempotent — safe to run even if some steps were never applied.
 
-## 1. Unregister the MCP server
+## Current NanoClaw (v2.2+, config-registered)
 
-In `container/agent-runner/src/index.ts`, remove the `if (process.env.NIMBLE_API_KEY) { … }`
-block (including its comment) that registers `mcpServers['nimble']` after the
-`config.mcpServers` merge loop.
+1. **Unregister the server.** List the groups, then for every group with a `nimble` MCP
+   entry:
 
-**Older forks** (applied via the fallbacks): remove the same registration block, and
-additionally remove `'mcp__nimble__*'` from the `allowedTools` array — on older forks
-apply added both.
+   ```bash
+   ncl groups list
+   ncl groups config get --id GROUP_ID
+   ncl groups config remove-mcp-server --id GROUP_ID --name nimble
+   ncl groups restart --id GROUP_ID
+   ```
 
-## 2. Revert the host-side edit in `src/container-runner.ts`
+2. **Remove the usage guidance** from every group whose `instructions.prepend.md`
+   contains the `nimble-web-search` block:
 
-- Remove the `const nimbleApiKey = readEnvFile(['NIMBLE_API_KEY']).NIMBLE_API_KEY;` block
-  (and its comment) that follows the `TZ` env line.
-- Remove `import { readEnvFile } from './env.js';` **only if** nothing else in the file
-  uses `readEnvFile` (grep first).
+   ```bash
+   perl -0pi -e 's/\n?<!-- nimble-web-search:start -->.*?<!-- nimble-web-search:end -->\n?//s' groups/GROUP_FOLDER/instructions.prepend.md
+   ```
 
-**Older forks:** remove `'NIMBLE_API_KEY'` from the `allowedVars` array instead.
+   No-op when the block is absent.
 
-## 3. Remove the agent guidance
+3. **Vault secret — optional.** The Nimble secret grants nothing once no server targets
+   `mcp.nimbleway.com`, and it may be shared by other groups or integrations on this
+   host — leaving it in place is safe. Only if the **operator confirms** nothing else
+   uses it:
 
-Delete the `## Web search (Nimble)` section from `container/CLAUDE.md` (or from
-`groups/main/CLAUDE.md` on older forks, if it was added there).
+   ```bash
+   onecli secrets list                    # find the mcp.nimbleway.com entry's id
+   onecli secrets delete --id SECRET_ID
+   ```
 
-## 4. Remove the env var
+## Older forks (v2.1.x, source-edited)
 
-```bash
-sed -i.bak '/^NIMBLE_API_KEY=/d' .env && rm -f .env.bak
-```
+1. In `container/agent-runner/src/index.ts`, remove the
+   `if (process.env.NIMBLE_API_KEY) { … }` block (including its comment) that registers
+   `mcpServers['nimble']` after the `config.mcpServers` merge loop. If the fork's
+   fallback also added `'mcp__nimble__*'` to a literal `allowedTools` array, remove that
+   entry too — apply added both.
 
-## 5. Build and restart
+2. In `src/container-runner.ts`, remove the
+   `const nimbleApiKey = readEnvFile(['NIMBLE_API_KEY']).NIMBLE_API_KEY;` block (and its
+   comment) after the `TZ` env line, and remove
+   `import { readEnvFile } from './env.js';` **only if** nothing else in the file uses
+   `readEnvFile` (grep first). On `allowedVars` forks, remove `'NIMBLE_API_KEY'` from
+   that array instead.
 
-Only the host code needs compiling — the agent runner and `container/CLAUDE.md` are mounted
-at spawn, so no image rebuild is needed.
+3. Delete the `## Web search (Nimble)` section from `container/CLAUDE.md` (or from
+   `groups/main/CLAUDE.md` if it was added there).
 
-```bash
-pnpm run build
+4. Remove the env var:
 
-# macOS
-source setup/lib/install-slug.sh 2>/dev/null && \
-  launchctl kickstart -k "gui/$(id -u)/$(launchd_label)" || \
-  launchctl kickstart -k "gui/$(id -u)/com.nanoclaw"
+   ```bash
+   sed -i.bak '/^NIMBLE_API_KEY=/d' .env && rm -f .env.bak
+   ```
 
-# Linux: systemctl --user restart nanoclaw
-```
+5. Build and restart (host code only — no image rebuild):
+
+   ```bash
+   pnpm run build
+   # macOS: launchctl kickstart -k "gui/$(id -u)/com.nanoclaw"   (or the install's label)
+   # Linux: systemctl --user restart nanoclaw
+   ```
 
 ## Verification
 
-After removal, asking the agent to "search the web with nimble" should report no such
-tool, and the registration block is gone from the source:
+- Current NanoClaw: `ncl groups config get --id GROUP_ID` no longer lists `nimble`,
+  `instructions.prepend.md` has no `nimble-web-search` block, and asking the agent to
+  "search the web with nimble" reports no such tool.
+- Older forks: additionally confirm the source edit is gone —
 
-```bash
-grep -c "Nimble web search MCP configured" container/agent-runner/src/index.ts   # expect 0
-```
+  ```bash
+  grep -c "Nimble web search MCP configured" container/agent-runner/src/index.ts   # expect 0
+  ```
 
-(Don't verify via `logs/nanoclaw.log` — container stderr only reaches it at
-`LOG_LEVEL=debug`, so an absent line proves nothing on a default install.)
+  (Don't verify via `logs/nanoclaw.log` — container stderr only reaches it at
+  `LOG_LEVEL=debug`, so an absent line proves nothing on a default install.)
