@@ -71,7 +71,35 @@ Either way, verify registration (names only — never values):
 onecli secrets list | grep -i nimble
 ```
 
-### 2. Register the Hosted MCP Server
+### 2. Grant the Secret to Each Target Group's Agent
+
+NanoClaw agents in `selective` mode receive **only** the secrets explicitly granted to
+them. Grant the Nimble secret to each target group's agent, then read the grants back.
+This applies to both lanes of step 1 (dashboard-created secrets included).
+
+NanoClaw pins its bundled OneCLI CLI at 2.2.5 (`versions.json`), whose
+`set-secrets` **replaces** the agent's whole list — never append blind. Use the
+canonical safe merge (read → merge → set → read back) NanoClaw's own skills ship:
+
+```bash
+# <agentGroupId> is the `agentGroupId` field in groups/GROUP_FOLDER/container.json;
+# NIMBLE_SECRET_ID is the Nimble entry's id from `onecli secrets list`.
+AGENT_ID=$(onecli agents list | jq -r '.data[] | select(.identifier=="<agentGroupId>") | .id')
+CURRENT=$(onecli agents secrets --id "$AGENT_ID" | jq -r '[.data[]] | join(",")')
+MERGED=$(printf '%s' "$CURRENT,NIMBLE_SECRET_ID" | tr ',' '\n' | sort -u | paste -sd ',' -)
+onecli agents set-secrets --id "$AGENT_ID" --secret-ids "$MERGED"
+onecli agents secrets --id "$AGENT_ID"   # read back: the list must include NIMBLE_SECRET_ID
+```
+
+**Different OneCLI version?** A standalone or newer OneCLI may expose a different
+grants surface. If `onecli agents secrets` / `set-secrets` are absent, stop and have an
+operator apply the equivalent grant from that version's own `onecli agents --help` —
+this skill does not guess command syntax it cannot verify.
+
+Without this grant, a selective-mode install completes every other step and then gets
+401/403 from Nimble — the gateway only injects granted secrets.
+
+### 3. Register the Hosted MCP Server
 
 Register the server on each target agent group (`ncl groups list` shows group ids):
 
@@ -87,7 +115,7 @@ ncl groups config add-mcp-server --id GROUP_ID --name nimble \
 - Tool allowlisting needs no edit: NanoClaw derives the `mcp__nimble__*` allow pattern from
   the registered server name.
 
-### 3. Add Usage Guidance to the Group's Standing Instructions
+### 4. Add Usage Guidance to the Group's Standing Instructions
 
 Write the block below into `groups/GROUP_FOLDER/instructions.prepend.md` for each selected
 group — replace an existing `<!-- nimble-web-search:start -->` …
@@ -119,7 +147,7 @@ the Nimble tools.
 <!-- nimble-web-search:end -->
 ```
 
-### 4. Restart and Test
+### 5. Restart and Test
 
 ```bash
 ncl groups restart --id GROUP_ID
@@ -163,7 +191,10 @@ The reply with cited sources is the verification.
 **Auth errors (401/403) from Nimble:**
 
 - The vault entry is missing, wrong, or was rotated: `onecli secrets list`, then redo
-  step 1. Endpoint reachability can be checked without any key — an unauthenticated
+  step 1.
+- The secret was never **granted** to this group's agent (selective mode): re-run step
+  2's safe-merge and confirm the readback lists the Nimble secret id.
+- Endpoint reachability can be checked without any key — an unauthenticated
   `POST https://mcp.nimbleway.com/mcp` returns an auth error, not a connection failure.
 
 **Agent ignores the usage guidance:**
@@ -246,7 +277,7 @@ pnpm run build
 # Linux: systemctl --user restart nanoclaw
 ```
 
-Then run step 4's functional test. To watch the registration line
+Then run step 5's functional test. To watch the registration line
 (`Nimble web search MCP configured`), note container stderr reaches `logs/nanoclaw.log`
 at **debug level only** — restart with `LOG_LEVEL=debug` per the repo's `/debug` skill.
 

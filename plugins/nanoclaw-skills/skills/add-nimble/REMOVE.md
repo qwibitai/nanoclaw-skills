@@ -23,10 +23,25 @@ Idempotent — safe to run even if some steps were never applied.
 
    No-op when the block is absent.
 
-3. **Vault secret — optional.** The Nimble secret grants nothing once no server targets
-   `mcp.nimbleway.com`, and it may be shared by other groups or integrations on this
-   host — leaving it in place is safe. Only if the **operator confirms** nothing else
-   uses it:
+3. **Revoke the group grant — optional.** Removing the grant only affects this group;
+   other groups' assignments are untouched. On NanoClaw's bundled OneCLI CLI (2.2.5,
+   `versions.json`), read the current list, drop `SECRET_ID`, then replace it with the
+   same safe pattern apply used, and read back:
+
+   ```bash
+   CURRENT=$(onecli agents secrets --id AGENT_ID | jq -r '[.data[]] | join(",")')
+   REMAINING=$(printf '%s' "$CURRENT" | tr ',' '\n' | grep -vx SECRET_ID | paste -sd ',' -)
+   onecli agents set-secrets --id AGENT_ID --secret-ids "$REMAINING"
+   onecli agents secrets --id AGENT_ID   # read back: SECRET_ID must be gone
+   ```
+
+   On a different OneCLI version whose `agents secrets` / `set-secrets` are absent, have
+   an operator apply the equivalent from that version's `onecli agents --help` — no
+   guessed syntax.
+
+4. **Vault secret — optional.** The secret may be shared by other groups or integrations
+   on this host — leaving it in place is safe. Only if the **operator confirms** nothing
+   else uses it:
 
    ```bash
    onecli secrets list                    # find the mcp.nimbleway.com entry's id
