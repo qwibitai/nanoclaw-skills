@@ -1,6 +1,6 @@
 ---
 name: add-nimble
-description: Add Nimble web search to NanoClaw via Nimble's hosted MCP — live web search, page extraction, and structured-data agents for the container agent, with cited sources. No local MCP server or extra dependency; one hosted endpoint, with the API key held in the OneCLI vault and never shown to the agent.
+description: Add bounded Nimble web search to NanoClaw via Nimble's hosted MCP — live search and page extraction with cited sources. The API key stays in OneCLI and never reaches the agent.
 ---
 
 # Add Nimble Web Search Integration
@@ -16,8 +16,8 @@ and the usage guidance lands in the group's standing-instructions file.
 - **Quick Web Search** (`nimble_search`) — fast live search with configurable content
   richness, locale/country targeting, and domain/date filters
 - **Page Extraction** (`nimble_extract`) — clean content from a specific URL
-- **Site & Data Tools** (`nimble_map`, `nimble_crawl_*`, `nimble_agents_*`) — site mapping,
-  multi-page crawls, and pre-built structured-data agents (permission-gated in the guidance)
+- A deliberately bounded tool surface: site crawls, maps, async extract, and structured-data
+  agents are not exposed to this group
 
 ## Prerequisites
 
@@ -105,15 +105,17 @@ Register the server on each target agent group (`ncl groups list` shows group id
 
 ```bash
 ncl groups config add-mcp-server --id GROUP_ID --name nimble \
-  --url https://mcp.nimbleway.com/mcp
+  --url https://mcp.nimbleway.com/mcp \
+  --enabled-tools '["nimble_search","nimble_extract"]'
 ```
 
 - The URL must end in `/mcp` (Streamable HTTP). NanoClaw rejects the `sse` transport, and
   Nimble's `/sse` path is a redirect loop — never use it.
 - Do **not** pass `--headers` with any credential: NanoClaw's own URL validation directs
   auth to OneCLI, and the gateway injects the `Authorization` header per request.
-- Tool allowlisting needs no edit: NanoClaw derives the `mcp__nimble__*` allow pattern from
-  the registered server name.
+- The explicit allowlist is enforced by the provider adapter. It exposes only
+  `mcp__nimble__nimble_search` and `mcp__nimble__nimble_extract`; registering the hosted
+  server never grants its crawl, map, async, or agent tools to this group.
 
 ### 4. Select External Web Search for the Group
 
@@ -122,16 +124,20 @@ per-group policy leaves every group that does not opt out on its provider defaul
 
 ```bash
 ncl groups config update --id GROUP_ID --web-search-mode disabled
+ncl groups config update --id GROUP_ID --response-delivery-mode terminal
 ```
 
-This command requires a NanoClaw release that includes the typed `web_search_mode`
-container setting. If the installed `ncl groups config update --help` does not list
-`--web-search-mode`, stop here and ask the operator to update NanoClaw; do not patch a
-provider globally or add a Nimble-specific runtime condition.
+These commands require a NanoClaw release that includes the typed `web_search_mode` and
+`response_delivery_mode` settings. If either flag is absent from
+`ncl groups config update --help`, stop and ask the operator to update NanoClaw; do not
+patch a provider globally or add a Nimble-specific runtime condition.
 
 For the Codex provider, NanoClaw maps this setting to Codex's official
 `web_search = "disabled"` configuration. Other providers may implement the same generic
-policy at their own provider boundary. The MCP allowlist remains `mcp__nimble__*`.
+policy at their own provider boundary. Terminal delivery disables the group's mid-turn
+message/reaction tools, so an acknowledgment cannot be mistaken for the completed answer;
+the normal final-result path remains unchanged. Groups that do not opt in keep the normal
+conversation behavior.
 
 ### 5. Add Usage Guidance to the Group's Standing Instructions
 
@@ -145,7 +151,7 @@ group — replace an existing `<!-- nimble-web-search:start -->` …
 <!-- nimble-web-search:start -->
 ## Web search (Nimble)
 
-When Nimble tools (`mcp__nimble__*`) are available, they are your primary way to reach
+When Nimble tools are available, they are your primary way to reach
 the live web:
 
 - **`nimble_search`** — web search. Use freely whenever current or verifiable information
@@ -154,12 +160,9 @@ the live web:
   unless the user explicitly needs them.
 - **`nimble_extract`** — fetch one specific URL as clean content. Use when the user
   shares a link or a search result needs its full page.
-- **Heavier tools** (`nimble_crawl_*`, `nimble_map`, `nimble_agents_*`,
-  `nimble_extract_async`) crawl whole sites, run structured-data agents, or work
-  asynchronously. Never start one without explicit user approval, including as a fallback
-  when search results are incomplete. For async jobs the user approved, don't block:
-  schedule a check that polls `nimble_task_results` (or `nimble_crawl_status`) and
-  report back when done.
+- Other Nimble tools are intentionally unavailable in this group. Do not try to substitute
+  a crawl, map, async job, or structured-data agent when search/extract is insufficient;
+  state the exact gap instead.
 
 For a bounded search request, finish the permitted searches in the current turn and then
 answer with the evidence or state the exact gap. Do not send a progress-only reply and
@@ -182,7 +185,8 @@ Confirm the registration landed:
 
 ```bash
 ncl groups config get --id GROUP_ID
-# Expect mcpServers.nimble and web_search_mode: "disabled".
+# Expect mcpServers.nimble.enabledTools with exactly nimble_search + nimble_extract,
+# web_search_mode: "disabled", and response_delivery_mode: "terminal".
 ```
 
 Then tell the user to test:
@@ -210,6 +214,8 @@ The reply with cited sources is the verification.
 
 - `ncl groups config get --id GROUP_ID` — the `mcpServers` map must contain `nimble` with
   `type: "http"` and the `/mcp` URL, and `web_search_mode` must be `disabled`
+  and `response_delivery_mode` must be `terminal`; `enabledTools` must contain only
+  `nimble_search` and `nimble_extract`
 - A restart is required after config changes: `ncl groups restart --id GROUP_ID`
 - The container logs `Additional MCP server: nimble (HTTP)` at boot; the repo's `/debug`
   skill shows how to surface container logs (`LOG_LEVEL=debug`)
