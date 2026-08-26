@@ -1,6 +1,6 @@
 ---
 name: add-nimble
-description: Add bounded Nimble web search to NanoClaw via Nimble's hosted MCP — live search and page extraction with cited sources. The API key stays in OneCLI and never reaches the agent.
+description: Add bounded Nimble web search to NanoClaw via Nimble's hosted MCP — live search and page extraction with cited sources. On current NanoClaw, the API key stays in OneCLI and never reaches the agent.
 ---
 
 # Add Nimble Web Search Integration
