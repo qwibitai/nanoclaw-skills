@@ -18,6 +18,7 @@ Idempotent — safe to run even if some steps were never applied.
 
    ```bash
    ncl groups config update --id GROUP_ID --web-search-mode default
+   ncl groups config update --id GROUP_ID --builtin-tool-mode default
    ncl groups config update --id GROUP_ID --response-delivery-mode default
    ```
 
@@ -98,7 +99,8 @@ Idempotent — safe to run even if some steps were never applied.
 ## Verification
 
 - Current NanoClaw: `ncl groups config get --id GROUP_ID` no longer lists `nimble`, shows
-  the default/null web-search and response-delivery modes, `instructions.prepend.md` has no `nimble-web-search`
+  the default/null web-search, built-in-tool, and response-delivery modes,
+  `instructions.prepend.md` has no `nimble-web-search`
   block, and asking the agent to "search the web with nimble" reports no such tool.
 - Older forks: additionally confirm the source edit is gone —
 

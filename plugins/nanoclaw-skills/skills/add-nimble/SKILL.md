@@ -124,17 +124,20 @@ per-group policy leaves every group that does not opt out on its provider defaul
 
 ```bash
 ncl groups config update --id GROUP_ID --web-search-mode disabled
+ncl groups config update --id GROUP_ID --builtin-tool-mode mcp-only
 ncl groups config update --id GROUP_ID --response-delivery-mode terminal
 ```
 
-These commands require a NanoClaw release that includes the typed `web_search_mode` and
-`response_delivery_mode` settings. If either flag is absent from
+These commands require a NanoClaw release that includes the typed `web_search_mode`,
+`builtin_tool_mode`, and `response_delivery_mode` settings. If any flag is absent from
 `ncl groups config update --help`, stop and ask the operator to update NanoClaw; do not
 patch a provider globally or add a Nimble-specific runtime condition.
 
 For the Codex provider, NanoClaw maps this setting to Codex's official
-`web_search = "disabled"` configuration. Other providers may implement the same generic
-policy at their own provider boundary. Terminal delivery disables the group's mid-turn
+`web_search = "disabled"` configuration and disables its provider-native shell, browser,
+direct-fetch, and other base tools; only the configured MCP tools remain model-visible.
+Providers that cannot enforce `mcp-only` must reject the group config instead of silently
+ignoring it. Terminal delivery disables the group's mid-turn
 message/reaction tools, so an acknowledgment cannot be mistaken for the completed answer;
 the normal final-result path remains unchanged. Groups that do not opt in keep the normal
 conversation behavior.
@@ -186,7 +189,8 @@ Confirm the registration landed:
 ```bash
 ncl groups config get --id GROUP_ID
 # Expect mcpServers.nimble.enabledTools with exactly nimble_search + nimble_extract,
-# web_search_mode: "disabled", and response_delivery_mode: "terminal".
+# web_search_mode: "disabled", builtin_tool_mode: "mcp-only", and
+# response_delivery_mode: "terminal".
 ```
 
 Then tell the user to test:
@@ -214,7 +218,8 @@ The reply with cited sources is the verification.
 
 - `ncl groups config get --id GROUP_ID` — the `mcpServers` map must contain `nimble` with
   `type: "http"` and the `/mcp` URL, and `web_search_mode` must be `disabled`
-  and `response_delivery_mode` must be `terminal`; `enabledTools` must contain only
+  `builtin_tool_mode` must be `mcp-only`, and `response_delivery_mode` must be
+  `terminal`; `enabledTools` must contain only
   `nimble_search` and `nimble_extract`
 - A restart is required after config changes: `ncl groups restart --id GROUP_ID`
 - The container logs `Additional MCP server: nimble (HTTP)` at boot; the repo's `/debug`
