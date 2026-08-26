@@ -132,7 +132,8 @@ the live web:
 
 - **`nimble_search`** — web search. Use freely whenever current or verifiable information
   helps: news, prices, schedules, releases, facts you're not certain of. Prefer a search
-  over a guess.
+  over a guess. Pass the required `query` alone by default; omit optional tuning fields
+  unless the user explicitly needs them.
 - **`nimble_extract`** — fetch one specific URL as clean content. Use when the user
   shares a link or a search result needs its full page.
 - **Heavier tools** (`nimble_crawl_*`, `nimble_map`, `nimble_agents_*`,
