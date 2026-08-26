@@ -24,6 +24,7 @@ This marketplace is auto-registered in NanoClaw's `.claude/settings.json` and lo
 - `/add-pdf-reader` — PDF text extraction
 - `/add-ollama-tool` — Ollama MCP server for local models
 - `/add-parallel` — Parallel AI integration
+- `/add-nimble` — Nimble web search via hosted MCP
 - `/x-integration` — X (Twitter) posting and interaction
 - `/add-reactions` — WhatsApp emoji reactions
 - `/add-compact` — Manual context compaction command
