@@ -11,10 +11,18 @@ Idempotent — safe to run even if some steps were never applied.
    ncl groups list
    ncl groups config get --id GROUP_ID
    ncl groups config remove-mcp-server --id GROUP_ID --name nimble
-   ncl groups restart --id GROUP_ID
    ```
 
-2. **Remove the usage guidance** from every group whose `instructions.prepend.md`
+2. **Restore the provider's default web-search policy** for every group configured by
+   this skill:
+
+   ```bash
+   ncl groups config update --id GROUP_ID --web-search-mode default
+   ```
+
+   This only clears the per-group override; it does not change any other group's policy.
+
+3. **Remove the usage guidance** from every group whose `instructions.prepend.md`
    contains the `nimble-web-search` block:
 
    ```bash
@@ -23,7 +31,13 @@ Idempotent — safe to run even if some steps were never applied.
 
    No-op when the block is absent.
 
-3. **Revoke the group grant — optional.** Removing the grant only affects this group;
+4. **Restart the group** after the server, policy, and standing-instruction changes:
+
+   ```bash
+   ncl groups restart --id GROUP_ID
+   ```
+
+5. **Revoke the group grant — optional.** Removing the grant only affects this group;
    other groups' assignments are untouched. On NanoClaw's bundled OneCLI CLI (2.2.5,
    `versions.json`), read the current list, drop `SECRET_ID`, then replace it with the
    same safe pattern apply used, and read back:
@@ -39,7 +53,7 @@ Idempotent — safe to run even if some steps were never applied.
    an operator apply the equivalent from that version's `onecli agents --help` — no
    guessed syntax.
 
-4. **Vault secret — optional.** The secret may be shared by other groups or integrations
+6. **Vault secret — optional.** The secret may be shared by other groups or integrations
    on this host — leaving it in place is safe. Only if the **operator confirms** nothing
    else uses it:
 
@@ -82,9 +96,9 @@ Idempotent — safe to run even if some steps were never applied.
 
 ## Verification
 
-- Current NanoClaw: `ncl groups config get --id GROUP_ID` no longer lists `nimble`,
-  `instructions.prepend.md` has no `nimble-web-search` block, and asking the agent to
-  "search the web with nimble" reports no such tool.
+- Current NanoClaw: `ncl groups config get --id GROUP_ID` no longer lists `nimble`, shows
+  the default/null web-search mode, `instructions.prepend.md` has no `nimble-web-search`
+  block, and asking the agent to "search the web with nimble" reports no such tool.
 - Older forks: additionally confirm the source edit is gone —
 
   ```bash

@@ -115,7 +115,25 @@ ncl groups config add-mcp-server --id GROUP_ID --name nimble \
 - Tool allowlisting needs no edit: NanoClaw derives the `mcp__nimble__*` allow pattern from
   the registered server name.
 
-### 4. Add Usage Guidance to the Group's Standing Instructions
+### 4. Select External Web Search for the Group
+
+Disable the provider's built-in web-search tool for each target group. This generic,
+per-group policy leaves every group that does not opt out on its provider default:
+
+```bash
+ncl groups config update --id GROUP_ID --web-search-mode disabled
+```
+
+This command requires a NanoClaw release that includes the typed `web_search_mode`
+container setting. If the installed `ncl groups config update --help` does not list
+`--web-search-mode`, stop here and ask the operator to update NanoClaw; do not patch a
+provider globally or add a Nimble-specific runtime condition.
+
+For the Codex provider, NanoClaw maps this setting to Codex's official
+`web_search = "disabled"` configuration. Other providers may implement the same generic
+policy at their own provider boundary. The MCP allowlist remains `mcp__nimble__*`.
+
+### 5. Add Usage Guidance to the Group's Standing Instructions
 
 Write the block below into `groups/GROUP_FOLDER/instructions.prepend.md` for each selected
 group — replace an existing `<!-- nimble-web-search:start -->` …
@@ -138,9 +156,14 @@ the live web:
   shares a link or a search result needs its full page.
 - **Heavier tools** (`nimble_crawl_*`, `nimble_map`, `nimble_agents_*`,
   `nimble_extract_async`) crawl whole sites, run structured-data agents, or work
-  asynchronously. Ask the user before starting one. For async jobs don't block: schedule
-  a check that polls `nimble_task_results` (or `nimble_crawl_status`) and report back
-  when done.
+  asynchronously. Never start one without explicit user approval, including as a fallback
+  when search results are incomplete. For async jobs the user approved, don't block:
+  schedule a check that polls `nimble_task_results` (or `nimble_crawl_status`) and
+  report back when done.
+
+For a bounded search request, finish the permitted searches in the current turn and then
+answer with the evidence or state the exact gap. Do not send a progress-only reply and
+continue researching after the caller has received it.
 
 **Always cite sources.** When an answer uses web results, include the source URLs so the
 user can verify. When Nimble tools are available, use them for web research and do not
@@ -149,7 +172,7 @@ auditable.
 <!-- nimble-web-search:end -->
 ```
 
-### 5. Restart and Test
+### 6. Restart and Test
 
 ```bash
 ncl groups restart --id GROUP_ID
@@ -158,7 +181,8 @@ ncl groups restart --id GROUP_ID
 Confirm the registration landed:
 
 ```bash
-ncl groups config get --id GROUP_ID   # the mcpServers map should show "nimble"
+ncl groups config get --id GROUP_ID
+# Expect mcpServers.nimble and web_search_mode: "disabled".
 ```
 
 Then tell the user to test:
@@ -185,7 +209,7 @@ The reply with cited sources is the verification.
 **Nimble tools don't appear to the agent:**
 
 - `ncl groups config get --id GROUP_ID` — the `mcpServers` map must contain `nimble` with
-  `type: "http"` and the `/mcp` URL
+  `type: "http"` and the `/mcp` URL, and `web_search_mode` must be `disabled`
 - A restart is required after config changes: `ncl groups restart --id GROUP_ID`
 - The container logs `Additional MCP server: nimble (HTTP)` at boot; the repo's `/debug`
   skill shows how to surface container logs (`LOG_LEVEL=debug`)
@@ -266,7 +290,7 @@ if (process.env.NIMBLE_API_KEY) {
 (If the fork has a literal `allowedTools: [...]` array, also add `'mcp__nimble__*'` to it;
 if `mcpServers` is typed loosely, drop the cast.)
 
-**D. Guidance** — append step 3's `## Web search (Nimble)` section (without the marker
+**D. Guidance** — append step 5's `## Web search (Nimble)` section (without the marker
 comments) to `container/CLAUDE.md`, the shared base these forks compose from (or to a
 hand-edited `groups/main/CLAUDE.md` if the fork has no composed base).
 
@@ -279,7 +303,7 @@ pnpm run build
 # Linux: systemctl --user restart nanoclaw
 ```
 
-Then run step 5's functional test. To watch the registration line
+Then run step 6's functional test. To watch the registration line
 (`Nimble web search MCP configured`), note container stderr reaches `logs/nanoclaw.log`
 at **debug level only** — restart with `LOG_LEVEL=debug` per the repo's `/debug` skill.
 
