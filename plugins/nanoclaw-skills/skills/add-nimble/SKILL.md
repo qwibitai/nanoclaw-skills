@@ -143,8 +143,9 @@ the live web:
   when done.
 
 **Always cite sources.** When an answer uses web results, include the source URLs so the
-user can verify. If both Nimble tools and the built-in `WebSearch` are available, prefer
-the Nimble tools.
+user can verify. When Nimble tools are available, use them for web research and do not
+use the built-in `WebSearch`; this keeps the configured provider choice effective and
+auditable.
 <!-- nimble-web-search:end -->
 ```
 
